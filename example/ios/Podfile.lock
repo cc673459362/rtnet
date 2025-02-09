@@ -1,0 +1,35 @@
+PODS:
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - RTClient (0.0.7)
+  - rtnet (0.0.1):
+    - Flutter
+    - RTClient
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - rtnet (from `.symlinks/plugins/rtnet/ios`)
+
+SPEC REPOS:
+  https://github.com/cc673459362/xccpod.git:
+    - RTClient
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  rtnet:
+    :path: ".symlinks/plugins/rtnet/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  RTClient: 50d4fe2bd27066c779a8348cb255c8d678d32b05
+  rtnet: 306d8f7814d29086fa98b19a612fa99fe0273151
+
+PODFILE CHECKSUM: 6ee011388be1236b3408663881a21456a03254a6
+
+COCOAPODS: 1.16.2
