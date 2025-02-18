@@ -1,7 +1,7 @@
 name: rtnet
 description: "A network plugin for flutter"
-version: 0.0.1
-homepage:
+version: 0.0.3
+homepage: https://github.com/cc673459362/rtnet
 
 environment:
   sdk: ^3.5.1

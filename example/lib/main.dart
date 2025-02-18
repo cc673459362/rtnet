@@ -19,19 +19,19 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   final _rtnetPlugin = Rtnet();
   late StreamSubscription<String> _subscription;
-  String _latestEvent = 'Waiting for events...';
+  final TextEditingController _controller = TextEditingController();  // 创建一个控制器
+  List<String> _events = [];
 
   @override
   void initState() {
     super.initState();
-    // 订阅原生端的事件流
     _subscription = _rtnetPlugin.eventStream.listen((event) {
       setState(() {
-        _latestEvent = event;  // 更新最新的事件数据
+        _events.add("[received:]" + event);
       });
     }, onError: (error) {
         setState(() {
-          _latestEvent = 'Error: $error';
+         _events.add('Error: $error');
         });
       },);
     initPlatformState();
@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    _subscription.cancel();  // 取消订阅
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -71,44 +71,66 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Text(_latestEvent),
-        ),
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        body: Column(
           children: <Widget>[
-            FloatingActionButton(
-              //按下连接网络
-              onPressed: () async {
-                final int? result = await _rtnetPlugin.open('42.194.195.181', 12346);
-                print('open result: $result');
-              },
-              child: Icon(Icons.add),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () async {
+                    final int? result = await _rtnetPlugin.open('42.194.195.181', 12346);
+                    print('open result: $result');
+                  },
+                  child: Text('connect'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final int? result = await _rtnetPlugin.close();
+                    print('close result: $result');
+                  },
+                  child: Text('close'),
+                ),
+              ],
             ),
-            // 发送数据
-            FloatingActionButton(
-              onPressed: () async {
-                final int? result = await _rtnetPlugin.send('Hello, RTNET!');
-                print('send result: $result');
-              },
-              child: Icon(Icons.send),
+            SizedBox(
+              height: 200.0,
+              width: 400.0,
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  color: Colors.grey[200],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _events.map((event) => Text(event, style: TextStyle(fontSize: 16.0))).toList(),
+                    ),
+                  ),
+                ),
             ),
-            // 关闭网络
-            FloatingActionButton(
-              onPressed: () async {
-                final int? result = await _rtnetPlugin.close();
-                print('close result: $result');
-              },
-              child: Icon(Icons.close),
-            ),
-            SizedBox(width: 16), // 两个按钮之间的间距
-            FloatingActionButton(
-              onPressed: () {},
-              child: Icon(Icons.remove),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: 'please input message',
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () async {
+                      final String message = _controller.text;
+                      final int? result = await _rtnetPlugin.send(message);
+                      print('send result: $result');
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-        //
       ),
     );
   }
