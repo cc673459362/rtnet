@@ -8,11 +8,63 @@
 #import "NetworkManager.h"
 #import "RTClient/RTClient.h"
 #import "RTClient/RTNet.h"
-#import "RTClientCallback.h"
 
 NetworkManager *globalNetManager = nil;
+@protocol RTClientCallbackDelegate <NSObject>
+@required
+- (void)onOpen;
+- (void)onRecv:(NSData *)data;
+- (void)onError:(NSError *)error;
+@end
 
-@interface NetworkManager ()
+class ClientCallback : public RTClient::RTClientCallback {
+ public:
+  ClientCallback(id<RTClientCallbackDelegate> delegate) : _delegate(delegate) {}
+
+  void onOpen() {
+    NSLog(@"Client opened!");
+    if ([_delegate respondsToSelector:@selector(onOpen)]) {
+      [_delegate performSelector:@selector(onOpen)];
+    }
+  }
+
+  void onRecv(char *data, int len) {
+    NSData *dataObject = [NSData dataWithBytes:data length:len];
+    NSLog(@"onRecv[%lu]:%@", (unsigned long)dataObject.length, dataObject);
+    if ([_delegate respondsToSelector:@selector(onRecv:)]) {
+      [_delegate performSelector:@selector(onRecv:) withObject:dataObject];  // 触发回调
+    }
+  }
+
+  void onError(int code, int subcode, char *desc) {
+    NSLog(@"onClose code:%d, subcode:%d desc:%s", code, subcode, desc);
+    if ([_delegate respondsToSelector:@selector(onError:)]) {
+      NSError *errInfo = createNSError(code, subcode, desc);
+      [_delegate performSelector:@selector(onError:) withObject:errInfo];
+    }
+  }
+
+ private:
+  NSError *createNSError(int code, int subcode, const char *desc) {
+    NSString *errorDomain = @"com.reclient.error";                      // 错误域
+    NSString *errorDescription = [NSString stringWithUTF8String:desc];  // 错误描述
+
+    // 合并 code 和 subcode，创建完整的错误码
+    int fullErrorCode = code * 1000 + subcode;  // 你可以根据实际情况修改这里的合并方式
+
+    // 创建包含描述信息的字典
+    NSDictionary *userInfo = @{NSLocalizedDescriptionKey : errorDescription};
+
+    // 创建 NSError 对象
+    NSError *error = [NSError errorWithDomain:errorDomain code:fullErrorCode userInfo:userInfo];
+    return error;
+  }
+
+ private:
+  __weak id<RTClientCallbackDelegate> _delegate;  // OC弱引用
+};
+
+@interface NetworkManager () <RTClientCallbackDelegate>
 
 @property(nonatomic, assign) std::shared_ptr<ClientCallback> callback;
 @property(nonatomic, assign) std::shared_ptr<RTClient::RTClient> client_c;

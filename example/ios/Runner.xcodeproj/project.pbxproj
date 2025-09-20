@@ -172,7 +172,6 @@
 				735FAA36D6E8974FD7C8B0FE /* Pods-RunnerTests.release.xcconfig */,
 				669A614365EC854EDA682FC9 /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -488,7 +487,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.rtnetExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.rtnetExample1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -658,7 +657,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.rtnetExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.rtnetExample1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -677,7 +676,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.rtnetExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.rtnetExample1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
