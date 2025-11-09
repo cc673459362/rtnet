@@ -19,7 +19,7 @@ class Rtnet {
     return RtnetPlatform.instance.open(ip, port);
   }
 
-  Future<int?> send(String data) {
+  Future<int?> send(Uint8List data) {
     return RtnetPlatform.instance.send(data);
   }
 

@@ -24,8 +24,8 @@ class MethodChannelRtnet extends RtnetPlatform {
   }
 
   @override
-  Future<int?> send(String data) {
-    return methodChannel.invokeMethod<int>('send', <String, dynamic>{
+  Future<int?> send(Uint8List data) {
+    return methodChannel.invokeMethod<int>('send', {
       'data': data,
     });
   }

@@ -31,6 +31,8 @@
     result([NSNumber numberWithInt:ret]);
   } else if ([@"send" isEqualToString:call.method]) {
     NSLog(@"send with args: %@", call.arguments[@"data"]);
+    FlutterStandardTypedData *flutterData = call.arguments[@"data"];
+    NSData *nativeData = flutterData.data; // 转换为NSData
     int ret = [self send:call.arguments[@"data"]];
     result([NSNumber numberWithInt:ret]);
   } else if ([@"close" isEqualToString:call.method]) {
@@ -67,10 +69,9 @@
     return 0;
 }
 
-- (int)send:(NSString *)string {
+- (int)send:(NSData *)data {
   // 发送数据
-  NSLog(@"send: %@", string);
-  NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+  NSLog(@"send: %@", data);
   return [self.netClient send:data];
 }
 

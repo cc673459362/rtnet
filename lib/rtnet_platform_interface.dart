@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'rtnet_method_channel.dart';
@@ -31,7 +33,7 @@ abstract class RtnetPlatform extends PlatformInterface {
     throw UnimplementedError('open() has not been implemented.');
   }
 
-  Future<int?> send(String data) {
+  Future<int?> send(Uint8List data) {
     throw UnimplementedError('send() has not been implemented.');
   }
 
