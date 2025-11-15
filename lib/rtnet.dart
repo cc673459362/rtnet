@@ -12,12 +12,12 @@ class Rtnet {
 
   // 数据流 - 返回 Uint8List（二进制数据）
   Stream<Uint8List> get dataStream {
-    return _dataChannel.receiveBroadcastStream().map((event) => event as Uint8List);
+    return _dataChannel.receiveBroadcastStream('rtnet_data').map((event) => event as Uint8List);
   }
 
   // 状态流 - 返回 String（状态消息）
   Stream<String> get statusStream {
-    return _statusChannel.receiveBroadcastStream().map((event) => event as String);
+    return _statusChannel.receiveBroadcastStream('rtnet_status').map((event) => event as String);
   }
 
   Future<String?> getPlatformVersion() {

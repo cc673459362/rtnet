@@ -17,31 +17,50 @@ NetworkManager *globalNetManager = nil;
 - (void)onError:(NSError *)error;
 @end
 
+// 这里为了后续把Native回调给flutter做准备，所有的回调都切换到主线程处理
+// 但是我感觉这种处理会导致网络任务和主线程UI任务夹杂在一起，可能导致网络数据延迟升高
+// 以后感觉这里是需要优化一下的，以后看数据
 class ClientCallback : public RTClient::RTClientCallback {
  public:
   ClientCallback(id<RTClientCallbackDelegate> delegate) : _delegate(delegate) {}
 
   void onOpen() {
-    NSLog(@"Client opened!");
-    if ([_delegate respondsToSelector:@selector(onOpen)]) {
-      [_delegate performSelector:@selector(onOpen)];
-    }
+    NSLog(@"Client opened! 当前线程: %@", [NSThread currentThread]);
+    
+    // ✅ 直接切换到主线程
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([_delegate respondsToSelector:@selector(onOpen)]) {
+            [_delegate onOpen];
+        }
+    });
   }
 
   void onRecv(char *data, int len) {
-    NSData *dataObject = [NSData dataWithBytes:data length:len];
-    NSLog(@"onRecv[%lu]:%@", (unsigned long)dataObject.length, dataObject);
-    if ([_delegate respondsToSelector:@selector(onRecv:)]) {
-      [_delegate performSelector:@selector(onRecv:) withObject:dataObject];  // 触发回调
-    }
+     NSLog(@"onRecv - 当前线程: %@", [NSThread currentThread]);
+    
+    // ✅ 直接切换到主线程处理
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSData *dataObject = [NSData dataWithBytes:data length:len];
+        NSLog(@"onRecv[主线程][%lu]:%@", (unsigned long)dataObject.length, dataObject);
+        
+        if ([_delegate respondsToSelector:@selector(onRecv:)]) {
+            [_delegate onRecv:dataObject];
+        }
+    });
   }
 
   void onError(int code, int subcode, char *desc) {
-    NSLog(@"onClose code:%d, subcode:%d desc:%s", code, subcode, desc);
-    if ([_delegate respondsToSelector:@selector(onError:)]) {
-      NSError *errInfo = createNSError(code, subcode, desc);
-      [_delegate performSelector:@selector(onError:) withObject:errInfo];
-    }
+    NSLog(@"onError - 当前线程: %@", [NSThread currentThread]);
+    
+    // ✅ 直接切换到主线程
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"onError code:%d, subcode:%d desc:%s", code, subcode, desc);
+        
+        if ([_delegate respondsToSelector:@selector(onError:)]) {
+            NSError *error = createNSError(code, subcode, desc);
+            [_delegate onError:error];
+        }
+    });
   }
 
  private:

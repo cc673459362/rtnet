@@ -138,9 +138,9 @@
 
 // 回调数据消息到 Flutter
 - (void)callbackData:(NSData *)data {
-  if (self.dataEventChannel) {
+  if (self.dataEventSink) {
     FlutterStandardTypedData *flutterData = [FlutterStandardTypedData typedDataWithBytes:data];
-    self.dataEventChannel(flutterData);
+    self.dataEventSink(flutterData);
     NSLog(@"[rtnet]回调数据: %@", data);
   } else {
     NSLog(@"[rtnet]数据流未就绪，无法回调数据");
