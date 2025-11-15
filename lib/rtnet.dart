@@ -4,11 +4,20 @@ import 'package:flutter/services.dart';
 import 'rtnet_platform_interface.dart';
 
 class Rtnet {
-  static const EventChannel _eventChannel = EventChannel('rtnet_event');
+  // 数据流通道 - 用于传输二进制数据（音频、视频等）
+  static const EventChannel _dataChannel = EventChannel('rtnet_data');
+  
+  // 状态流通道 - 用于传输状态消息（连接状态、错误信息等）
+  static const EventChannel _statusChannel = EventChannel('rtnet_status');
 
-  // 创建一个 Stream 来接收原生端的事件数据
-  Stream<String> get eventStream {
-    return _eventChannel.receiveBroadcastStream().map((event) => event as String);
+  // 数据流 - 返回 Uint8List（二进制数据）
+  Stream<Uint8List> get dataStream {
+    return _dataChannel.receiveBroadcastStream().map((event) => event as Uint8List);
+  }
+
+  // 状态流 - 返回 String（状态消息）
+  Stream<String> get statusStream {
+    return _statusChannel.receiveBroadcastStream().map((event) => event as String);
   }
 
   Future<String?> getPlatformVersion() {
